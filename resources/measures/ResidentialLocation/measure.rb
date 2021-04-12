@@ -75,7 +75,8 @@ class SetResidentialEPWFile < OpenStudio::Measure::ModelMeasure
       weather_directory = File.expand_path(File.join(File.dirname(__FILE__), weather_directory))
     end
     weather_file_path = File.join(weather_directory, weather_file_name)
-
+    runner.registerWarning("abs_weather_file_path:#{File.expand_path(weather_file_path)}")
+    runner.registerWarning("abs_weather_file_path exit?:#{File.exist?(File.expand_path(weather_file_path))}")
     success, weather = Location.apply(model, runner, weather_file_path, dst_start_date, dst_end_date)
     return false if not success
 

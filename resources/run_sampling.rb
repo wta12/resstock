@@ -15,6 +15,13 @@ class RunSampling
       characteristics_dir = File.absolute_path(File.join(File.dirname(__FILE__), '..', project_dir_name, housing_characteristics_dir)) # Being run locally?
     end
 
+    test_log = ["0_resource_dir: #{File.absolute_path(File.join(File.dirname(__FILE__), '..', 'resources'))}",
+    "1_characteristics_dir: #{File.absolute_path(File.join(File.dirname(__FILE__), '..', housing_characteristics_dir))}",
+    "2_characteristics_dir: #{File.absolute_path(File.join(File.dirname(__FILE__), '..', project_dir_name, housing_characteristics_dir))}",
+    "3_Finalcharacteristics_dir: #{characteristics_dir}",
+    ]
+    # register_error(test_log.join("\n"))
+
     if lookup_file.nil?
       lookup_file = File.join(resources_dir, "options_lookup.tsv")
     end
@@ -30,6 +37,7 @@ class RunSampling
       tsvfiles[param] = tsvfile
     end
     params = tsvfiles.keys
+    # register_error(tsvfiles.keys.join("\n"))
     if params.size == 0
       register_error("No parameters found, aborting...", nil)
     end
@@ -37,6 +45,7 @@ class RunSampling
     params = update_parameter_dependencies(params, tsvfiles)
     sample_results = perform_sampling(params, num_samples, tsvfiles, project_dir_name).transpose
     out_file = write_csv(sample_results, outfile)
+    # register_error(outfile)
     return out_file
   end
 
@@ -298,7 +307,7 @@ class RunSampling
   end
 
   def write_csv(sample_results, outfile)
-    # Writes the csv output file.
+    # Writes the csv output file: same as resstock/resource/run_sampling.rb file
     out_file = File.absolute_path(File.join(File.dirname(__FILE__), outfile))
     CSV.open(out_file, 'w') do |csv_object|
       sample_results.each do |sample_result|
