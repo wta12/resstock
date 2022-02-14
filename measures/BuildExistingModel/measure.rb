@@ -155,7 +155,8 @@ class BuildExistingModel < OpenStudio::Measure::ModelMeasure
     if !runner.validateUserArguments(arguments(model), user_arguments)
       return false
     end
-
+    # pp "args: #{user_arguments}\n#{arguments(model)}"
+    # pp runner.methods
     # assign the user inputs to variables
     args = get_argument_values(runner, arguments(model), user_arguments)
 
@@ -367,6 +368,11 @@ class BuildExistingModel < OpenStudio::Measure::ModelMeasure
     measures['HPXMLtoOpenStudio'][0]['debug'] = args['debug'].get if args['debug'].is_initialized
     measures['HPXMLtoOpenStudio'][0]['add_component_loads'] = args['add_component_loads'].get if args['add_component_loads'].is_initialized
 
+    runner.registerWarning(hpxml_measures_dir)
+    runner.registerWarning(File.expand_path(hpxml_measures_dir))
+    # test  = apply_measures(hpxml_measures_dir, { 'BuildResidentialHPXML' => measures['BuildResidentialHPXML'], 'BuildResidentialScheduleFile' => measures['BuildResidentialScheduleFile'], 'HPXMLtoOpenStudio' => measures['HPXMLtoOpenStudio'] }, new_runner, model, true, 'OpenStudio::Measure::ModelMeasure', 'existing.osw')
+    # runner.registerWarning(test)
+    # put
     if not apply_measures(hpxml_measures_dir, { 'BuildResidentialHPXML' => measures['BuildResidentialHPXML'], 'BuildResidentialScheduleFile' => measures['BuildResidentialScheduleFile'], 'HPXMLtoOpenStudio' => measures['HPXMLtoOpenStudio'] }, new_runner, model, true, 'OpenStudio::Measure::ModelMeasure', 'existing.osw')
       new_runner.result.warnings.each do |warning|
         runner.registerWarning(warning.logMessage)

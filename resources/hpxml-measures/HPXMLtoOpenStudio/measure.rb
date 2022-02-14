@@ -164,23 +164,59 @@ class HPXMLtoOpenStudio < OpenStudio::Measure::ModelMeasure
 
   def process_weather(hpxml, runner, model, hpxml_path)
     epw_path = hpxml.climate_and_risk_zones.weather_station_epw_filepath
+    # runner.registerWarning(File.expand_path(epw_path))
+    # runner.registerWarning(epw_path)
+    # dir_path = File.expand_path(File.join(File.dirname(__FILE__), '..', '..','..','weather'))
+    # # # runner.registerWarning(File.expand_path(File.dirname(__FILE__)))
+    # runner.registerWarning(dir_path)
+    # runner.registerWarning(Dir.exist?(dir_path).to_s)
+    # runner.registerWarning(Dir.entries(dir_path).size.to_s)
+    # check_dir_path = File.expand_path(File.join(File.dirname(__FILE__), '..', '..','..','measures'))
+    # runner.registerWarning(Dir.exist?(check_dir_path).to_s)
+    # runner.registerWarning(check_dir_path)
+    # runner.registerWarning(Dir.entries(check_dir_path).size.to_s)
+    test_pwd = File.expand_path(File.dirname(__FILE__)+"/../../../weather")
+    runner.registerWarning("pwd:#{test_pwd}")
+    runner.registerWarning("pwd_exits:#{File.exist?(test_pwd)}")
+    runner.registerWarning("pwd_entries:#{Dir.entries(test_pwd).map {|x| File.join(test_pwd,x)}}")
+    # measure_weather_path =  "/var/simdata/openstudio/run/000_BuildExistingModel/weather"
+    # runner.registerWarning("pwd_entries:#{Dir.entries(measure_weather_path).map {|x| File.expand_path(x)}}")
 
+    possible_test_epw_paths = [
+      File.join(File.dirname(hpxml_path), epw_path),
+      File.join(File.dirname(__FILE__), '..', 'weather', epw_path),
+      File.join(File.dirname(__FILE__), '..', '..', 'weather', epw_path),
+      File.join(File.dirname(__FILE__), '..', '..','..', 'weather', epw_path),
+    ]
+    runner.registerWarning("initial_test:#{File.exist? epw_path}")
+    runner.registerWarning("exist_test:#{possible_test_epw_paths.any?{|x| File.exist?(File.expand_path(x))}}")
     if not File.exist? epw_path
-      test_epw_path = File.join(File.dirname(hpxml_path), epw_path)
-      epw_path = test_epw_path if File.exist? test_epw_path
+      possible_test_epw_paths.each do |test_epw_path|
+        if File.exist?(test_epw_path)
+          epw_path = File.expand_path(test_epw_path)
+          break
+        end
+      end
+      # test_epw_path = File.join(File.dirname(hpxml_path), epw_path)
+      # epw_path = test_epw_path if File.exist? test_epw_path
     end
-    if not File.exist? epw_path
-      test_epw_path = File.join(File.dirname(__FILE__), '..', 'weather', epw_path)
-      epw_path = test_epw_path if File.exist? test_epw_path
-    end
-    if not File.exist? epw_path
-      test_epw_path = File.join(File.dirname(__FILE__), '..', '..', 'weather', epw_path)
-      epw_path = test_epw_path if File.exist? test_epw_path
-    end
+    
+    
+    
+
+   
+    # if not File.exist? epw_path
+    #   test_epw_path = File.join(File.dirname(__FILE__), '..', 'weather', epw_path)
+    #   epw_path = test_epw_path if File.exist? test_epw_path
+    # end
+    # if not File.exist? epw_path
+    #   test_epw_path = File.join(File.dirname(__FILE__), '..', '..', 'weather', epw_path)
+    #   epw_path = test_epw_path if File.exist? test_epw_path
+    # end
     if not File.exist?(epw_path)
       fail "'#{epw_path}' could not be found."
     end
-
+    runner.registerWarning("final_epw_path:#{File.expand_path(epw_path)}")
     cache_path = epw_path.gsub('.epw', '-cache.csv')
     if not File.exist?(cache_path)
       # Process weather file to create cache .csv

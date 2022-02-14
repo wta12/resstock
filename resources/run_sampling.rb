@@ -26,6 +26,7 @@ class RunSampling
     params = get_parameters_ordered_from_options_lookup_tsv(lookup_csv_data)
 
     tsvfiles = {}
+  
     params.each do |param|
       tsvpath = File.join(characteristics_dir, param + '.tsv')
       next if not File.exist?(tsvpath) # Not every parameter used by every mode
