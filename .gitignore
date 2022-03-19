@@ -7,5 +7,4 @@
 /weather
 /workflow/*
 !/workflow/run_analysis.rb
-/resStock_project
 /Output
